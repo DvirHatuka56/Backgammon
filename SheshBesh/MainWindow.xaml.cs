@@ -6,13 +6,15 @@ using System.Windows.Media;
 
 namespace SheshBesh
 {
-    public delegate void SpikeClicked(int row, int column);
+    public delegate void SpikeClicked(int row, int column, int cube1, int cube2);
     
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow
     {
+        private int cube1;
+        private int cube2;
         private Board LogicBoard;
         private UiSpikeElement[,] UiBoard;
         public static event SpikeClicked OnSpikeClicked;
@@ -54,6 +56,10 @@ namespace SheshBesh
 
         private void SetInGrid(UiSpikeElement element, int row, int column)
         {
+            if (column > 5)
+            {
+                column++;
+            }
             Grid.SetRow(element, row);
             Grid.SetColumn(element, column);
             BoardGrid.Children.Add(element);
@@ -62,7 +68,7 @@ namespace SheshBesh
         private void OnMouseDown(object sender, MouseButtonEventArgs e)
         {
             UiSpikeElement uiSpikeElement = (UiSpikeElement) sender;
-            OnSpikeClicked?.Invoke(uiSpikeElement.Row, uiSpikeElement.Column);
+            OnSpikeClicked?.Invoke(uiSpikeElement.Row, uiSpikeElement.Column, cube1, cube2);
             Update();
         }
 
@@ -75,6 +81,15 @@ namespace SheshBesh
                     UiBoard[i, j].Update(LogicBoard[i, j]);
                 }
             }
+        }
+
+        private void Cubes_Clicked(object sender, RoutedEventArgs e)
+        {
+            Random cube =new Random();
+            cube1 = cube.Next(1, 7);
+            cube2 = cube.Next(1, 7);
+            TextCube1.Content = cube1;
+            TextCube2.Content = cube2;
         }
     }
 }
