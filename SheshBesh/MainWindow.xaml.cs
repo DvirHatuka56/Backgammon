@@ -31,10 +31,10 @@ namespace SheshBesh
                     Spike spike = LogicBoard[i, j];
                     UiBoard[i, j] = new UiSpikeElement(i, j);
                     UiBoard[i, j].MouseDown += OnMouseDown;
-                    UiBoard[i, j].MouseEnter += OnMouseEnter;
-                    UiBoard[i, j].MouseLeave += OnMouseLeave;
+                    // UiBoard[i, j].MouseEnter += OnMouseEnter;
+                    // UiBoard[i, j].MouseLeave += OnMouseLeave;
                     SetInGrid(UiBoard[i, j], i, j);
-                    UiBoard[i, j].Update(spike.SoldiersCount, spike.Black);
+                    UiBoard[i, j].Update(spike);
                 }
             }
         }
@@ -74,6 +74,7 @@ namespace SheshBesh
 
         private void Update()
         {
+            Turn.Content = LogicBoard.BlackTurn ? "Black turn" : "White turn";
             for (int i = 0; i < 2; i++)
             {
                 for (int j = 0; j < 12; j++)
@@ -90,6 +91,20 @@ namespace SheshBesh
             cube2 = cube.Next(1, 7);
             TextCube1.Content = cube1;
             TextCube2.Content = cube2;
+        }
+
+        private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("System checking who starts");
+
+            do
+            {
+                Cubes_Clicked(null, null);
+            } while (cube1 == cube2);
+
+            MessageBox.Show(cube1 > cube2 ? "Black starts" : "White starts");
+            LogicBoard.BlackTurn = (cube1 > cube2);
+            Turn.Content = LogicBoard.BlackTurn ? "Black turn" : "White turn";
         }
     }
 }

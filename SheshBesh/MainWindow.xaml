@@ -5,19 +5,28 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SheshBesh"
         mc:Ignorable="d"
-        Title="MainWindow" Height="760" Width="1000" ResizeMode="CanMinimize">
+        Title="MainWindow" Height="820" Width="1000"
+        Loaded="MainWindow_OnLoaded">
     <Window.Content>
-        <StackPanel>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
             <Border BorderThickness="4"
-                    BorderBrush="Blue">
-                <StackPanel Orientation="Horizontal">
+                    BorderBrush="Blue"
+                    Grid.Row="0">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <Label Content="0" x:Name="TextCube1"/>
                     <Label Content="0" x:Name="TextCube2"/>
                     <Button Content="Role cubes"
                             Click="Cubes_Clicked"/>
+                    <Label Content="Eaten whites:" x:Name="EatenWhites" />
+                    <Label Content="Eaten blacks:" x:Name="EatenBlacks" />
+                    <Label x:Name="Turn" FontWeight="Bold" />
                 </StackPanel>
             </Border>
-            <Grid x:Name="BoardGrid">
+            <Grid x:Name="BoardGrid" Grid.Row="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
@@ -42,6 +51,6 @@
                        Background="Black"/>
                 
             </Grid>
-        </StackPanel>
+        </Grid>
     </Window.Content>
 </Window>

@@ -10,23 +10,13 @@ namespace SheshBesh
     {
         public int Row { get; }
         public int Column { get; }
+        
+        private const int Size = 75;
 
         public UiSpikeElement(int row, int column)
         {
             Row = row;
             Column = column;
-            Background = new ImageBrush
-            {
-                ImageSource = GetBackgroundImage(row, column)
-            };
-        }
-
-        public UiSpikeElement(int row, int column, int soldierCount, bool black)
-        {
-            Row = row;
-            Column = column;
-            Update(soldierCount, black);
-            BorderBrush = new SolidColorBrush(Colors.Black);
             Background = new ImageBrush
             {
                 ImageSource = GetBackgroundImage(row, column)
@@ -51,23 +41,71 @@ namespace SheshBesh
         
         public void Update(Spike spike)
         {
-            string path = $"Images/{(spike.Black ? "Black" : "White")}Player.png";
             StackPanel stackPanel = new StackPanel();
-            BitmapImage image = new BitmapImage();
-            image.BeginInit();
-            image.UriSource = new Uri(path, UriKind.Relative); 
-            image.EndInit();
-            for (int i = 0; i < spike.SoldiersCount; i++)
+            
+            if (spike.SoldiersCount > 5)
             {
-                stackPanel.Children.Add(new Image{Source = image});
+                if (Row == 1)
+                {
+                    stackPanel.Children.Add(new Label
+                    {
+                        Content = spike.SoldiersCount, HorizontalAlignment = HorizontalAlignment.Center, FontSize = 25,
+                        Foreground = spike.Black ? Brushes.White : Brushes.Black,
+                        HorizontalContentAlignment = HorizontalAlignment.Center,
+                        Height = Size, Width = Size,
+                        Background = new ImageBrush
+                        {
+                            ImageSource = GetSoldierImage(spike), Stretch = Stretch.UniformToFill
+                        }
+                    });
+                }
+
+                for (int i = 0; i < 4; i++)
+                {
+                    stackPanel.Children.Add(new Image{Source = GetSoldierImage(spike),Height = Size,Width = Size});
+                }
+                if (Row == 0)
+                {
+                    stackPanel.Children.Add(new Label
+                    {
+                        Content = spike.SoldiersCount, HorizontalAlignment = HorizontalAlignment.Center, FontSize = 25,
+                        HorizontalContentAlignment = HorizontalAlignment.Center,
+                        Foreground = spike.Black ? Brushes.White : Brushes.Black,
+                        Height = Size, Width = Size,
+                        Background = new ImageBrush
+                        {
+                            ImageSource = GetSoldierImage(spike), Stretch = Stretch.UniformToFill
+                        }
+                    });
+                }
             }
+            else
+            {
+                for (int i = 0; i < spike.SoldiersCount; i++)
+                {
+                    stackPanel.Children.Add(new Image {Source = GetSoldierImage(spike),Height = Size,Width = Size});
+                }
+            }
+
             Content = stackPanel;
+            
+            
             VerticalContentAlignment = Row == 0 ? VerticalAlignment.Top : VerticalAlignment.Bottom;
-            BorderThickness = new Thickness(spike.Marked ? 10 : 0);
+            // BorderThickness = new Thickness(spike.Marked ? 4 : 0);
             Background = new ImageBrush
             {
                 ImageSource = spike.PreviewMode ? GetMarkedImage(Row, Column) : GetBackgroundImage(Row, Column)
             };
+        }
+
+        private static BitmapImage GetSoldierImage(Spike spike)
+        {
+            string path = $"Images/{(spike.Black ? "Black" : "White")}Player.png";
+            BitmapImage image = new BitmapImage();
+            image.BeginInit();
+            image.UriSource = new Uri(path, UriKind.Relative);
+            image.EndInit();
+            return image;
         }
 
         private BitmapImage GetMarkedImage(int row, int column)
