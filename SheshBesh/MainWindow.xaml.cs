@@ -82,6 +82,11 @@ namespace SheshBesh
                     UiBoard[i, j].Update(LogicBoard[i, j]);
                 }
             }
+
+            if (LogicBoard.numTurns == -1) 
+            {
+                Cubes_Clicked(null, null);
+            }
         }
 
         private void Cubes_Clicked(object sender, RoutedEventArgs e)

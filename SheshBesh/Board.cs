@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using System;
+using System.Runtime.Serialization;
 
 namespace SheshBesh
 {
@@ -21,7 +22,7 @@ namespace SheshBesh
         public bool TurnStart { get; set; }
         public int Cube1 { get; set; }
         public int Cube2 { get; set; }
-        private int numTurns;
+        public int numTurns;
         public Board()
         {
             MainWindow.OnSpikeClicked += OnSpikeClicked;
@@ -91,17 +92,19 @@ namespace SheshBesh
                     for (var i = 0; i < locs.Length; i++)
                     {
                         (int r, int c) = GetSpikeById(locs[i]);
+                        if (r == -1 || c == -1) continue;
                         Spikes[r, c].PreviewMode = CheckSpike(r, c) && CheckMoveDirection(r, c);
-                        srcSpike = new SpikeData
-                        {
-                            Column = column,
-                            Row = row,
-                            Spike = Spikes[row, column]
-                        };
-                        Spikes[row, column].Marked = true;
-                        FirstClick = false;
-                        return;
                     }
+                    
+                    srcSpike = new SpikeData
+                    {
+                        Column = column,
+                        Row = row,
+                        Spike = Spikes[row, column]
+                    };
+                    Spikes[row, column].Marked = true;
+                    FirstClick = false;
+                    return;
                 }
                 
                 (int l1, int l2, int l3) = GetPreviewLocation(row, column, Cube1, Cube2);
@@ -152,38 +155,38 @@ namespace SheshBesh
                 Spikes[row, column].SoldiersCount++;
             }
 
-            if (Spikes[row,column].SpikeId == srcSpike.l1)
+            if (cube1 != cube2)
             {
-                Cube1 = 0;
-                numTurns--;
+                if (Spikes[row, column].SpikeId == srcSpike.l1)
+                {
+                    Cube1 = 0;
+                    numTurns--;
+                }
+
+                if (Spikes[row, column].SpikeId == srcSpike.l2)
+                {
+                    Cube2 = 0;
+                    numTurns--;
+                }
+
+                if (Spikes[row, column].SpikeId == srcSpike.l3)
+                {
+                    Cube1 = 0;
+                    Cube2 = 0;
+                    numTurns -= 2;
+                }
             }
-            if (Spikes[row,column].SpikeId == srcSpike.l2)
+            else
             {
-                Cube2 = 0;
-                numTurns--;
+                int turns = Math.Abs(srcSpike.Spike.SpikeId - Spikes[row, column].SpikeId) / cube1;
+                numTurns -= turns;
             }
-            if (Spikes[row,column].SpikeId == srcSpike.l3)
+            for (int i = 0; i < Spikes.GetLength(0); i++)
             {
-                Cube1 = 0;
-                Cube2 = 0;
-                numTurns -= 2;
-            }
-            if (srcSpike.l1 > 0 && srcSpike.l1 < 24)
-            {
-                (int rowl1, int columnl1) = GetSpikeById(srcSpike.l1);
-                Spikes[rowl1, columnl1].PreviewMode = false;
-            }
-            
-            if (srcSpike.l2 > 0 && srcSpike.l2 < 24)
-            {
-                (int rowl2, int columnl2) = GetSpikeById(srcSpike.l2);
-                Spikes[rowl2, columnl2].PreviewMode = false;
-            }
-            
-            if (srcSpike.l3 > 0 && srcSpike.l3 < 24)
-            {
-                (int rowl3, int columnl3) = GetSpikeById(srcSpike.l3);
-                Spikes[rowl3, columnl3].PreviewMode = false;
+                for (int j = 0; j < Spikes.GetLength(1); j++)
+                {
+                    Spikes[i, j].PreviewMode = false;
+                }
             }
 
             if (numTurns <= 0) 
@@ -277,7 +280,7 @@ namespace SheshBesh
         private int[] GetDoublePreviewLocations(int row, int column, int cube)
         {
             int[] locs=new int[numTurns];
-            for (int i = 1; i < numTurns; i++)
+            for (int i = 1; i < numTurns + 1; i++)
             {
                 locs[i - 1] = Spikes[row, column].SpikeId + (cube * i) * (Spikes[row, column].Black ? 1 : -1);
             }
