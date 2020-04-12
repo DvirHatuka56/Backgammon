@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Runtime.Serialization;
 
 namespace SheshBesh
 {
+    public delegate void RollCubeDelegate();
     public struct SpikeData
     {
         public Spike Spike { get; set; }
@@ -19,16 +19,15 @@ namespace SheshBesh
         public bool FirstClick { get; private set; }
         public SpikeData srcSpike { get; private set; }
         public bool BlackTurn { get; set; }
-        public bool TurnStart { get; set; }
         public int Cube1 { get; set; }
         public int Cube2 { get; set; }
         public int numTurns;
+        public static event RollCubeDelegate RollCubeEvent;
         public Board()
         {
             MainWindow.OnSpikeClicked += OnSpikeClicked;
             FirstClick = true;
             numTurns = -1;
-            TurnStart = false;
             Spikes = new Spike[2, 12];
             for (int i = 0; i < 2; i++)
             {
@@ -89,12 +88,6 @@ namespace SheshBesh
                 if (cube1 == cube2)
                 {
                     int[] locs = GetDoublePreviewLocations(row, column, cube1);
-                    for (var i = 0; i < locs.Length; i++)
-                    {
-                        (int r, int c) = GetSpikeById(locs[i]);
-                        if (r == -1 || c == -1) continue;
-                        Spikes[r, c].PreviewMode = CheckSpike(r, c) && CheckMoveDirection(r, c);
-                    }
                     
                     srcSpike = new SpikeData
                     {
@@ -102,6 +95,16 @@ namespace SheshBesh
                         Row = row,
                         Spike = Spikes[row, column]
                     };
+
+                    for (var i = 0; i < locs.Length; i++)
+                    {
+                        (int r, int c) = GetSpikeById(locs[i]);
+                        if (r == -1 || c == -1) continue;
+                        bool x = CheckSpike(r, c) && CheckMoveDirection(r, c);
+                        if (!x) break;
+                        Spikes[r, c].PreviewMode = x;
+                    }
+
                     Spikes[row, column].Marked = true;
                     FirstClick = false;
                     return;
@@ -193,6 +196,7 @@ namespace SheshBesh
             {
                 numTurns = -1;
                 BlackTurn = !BlackTurn;
+                RollCubeEvent?.Invoke();
             }
             FirstClick = true;
         }

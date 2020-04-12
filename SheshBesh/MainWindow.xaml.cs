@@ -2,7 +2,6 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
 
 namespace SheshBesh
 {
@@ -24,6 +23,8 @@ namespace SheshBesh
             InitializeComponent();
             LogicBoard = new Board();
             UiBoard = new UiSpikeElement[2, 12];
+            Board.RollCubeEvent += BoardOnRollCubeEvent;
+            
             for (int i = 0; i < 2; i++)
             {
                 for (int j = 0; j < 12; j++)
@@ -37,6 +38,11 @@ namespace SheshBesh
                     UiBoard[i, j].Update(spike);
                 }
             }
+        }
+
+        private void BoardOnRollCubeEvent()
+        {
+            Cubes_Clicked(null,null);
         }
 
         private void OnMouseLeave(object sender, MouseEventArgs e)
@@ -75,17 +81,20 @@ namespace SheshBesh
         private void Update()
         {
             Turn.Content = LogicBoard.BlackTurn ? "Black turn" : "White turn";
+            if (LogicBoard.numTurns == -1) 
+            {
+                LeftTurns.Content = "Left turn: 0";
+            }
+            else
+            {
+                LeftTurns.Content = $"Left turn: {LogicBoard.numTurns}";
+            }
             for (int i = 0; i < 2; i++)
             {
                 for (int j = 0; j < 12; j++)
                 {
                     UiBoard[i, j].Update(LogicBoard[i, j]);
                 }
-            }
-
-            if (LogicBoard.numTurns == -1) 
-            {
-                Cubes_Clicked(null, null);
             }
         }
 
