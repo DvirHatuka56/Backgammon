@@ -2,7 +2,7 @@
 
 namespace SheshBesh
 {
-    public delegate void RollCubeDelegate();
+    public delegate (int cub1, int cub2) RollCubeDelegate();
     public struct SpikeData
     {
         public Spike Spike { get; set; }
@@ -21,6 +21,9 @@ namespace SheshBesh
         public bool BlackTurn { get; set; }
         public int Cube1 { get; set; }
         public int Cube2 { get; set; }
+        public int eatenW { get; set; }
+        public int eatenB { get; set; }
+
         public int numTurns;
         public static event RollCubeDelegate RollCubeEvent;
         public Board()
@@ -76,6 +79,33 @@ namespace SheshBesh
         {
             if (FirstClick)
             {
+                //arrange the code properly to fit the numTurn value
+                if (eatenB > 0 && BlackTurn) 
+                {
+                    if (Spikes[row,column].PreviewMode)
+                    {
+                        Spikes[row, column].SoldiersCount++;
+                        ClearAll();
+                        eatenB--;
+                        numTurns--;
+                        HandleEat(row, column, cube1, cube2);
+                        FirstClick = true;
+                    }
+                }
+                if (eatenW > 0 && !BlackTurn) 
+                {
+                    
+                    if (Spikes[row,column].PreviewMode)
+                    {
+                        Spikes[row, column].SoldiersCount++;
+                        ClearAll();
+                        eatenW--;
+                        numTurns--;
+                        HandleEat(row, column, cube1, cube2);
+                        FirstClick = true;
+                    }
+                }
+
                 if (Spikes[row, column].IsEmpty() || Spikes[row, column].Black != BlackTurn) { return; }
 
                 if (numTurns == -1) 
@@ -84,7 +114,6 @@ namespace SheshBesh
                     Cube2 = cube2;
                     SetNumTurns(row, column);
                 }
-
                 if (cube1 == cube2)
                 {
                     int[] locs = GetDoublePreviewLocations(row, column, cube1);
@@ -154,6 +183,15 @@ namespace SheshBesh
 
             if (Spikes[row, column].PreviewMode)
             {
+                if (Spikes[row, column].SoldiersCount == 1 && srcSpike.Spike.Black != Spikes[row, column].Black)
+                {
+                    Spikes[row, column].SoldiersCount--;
+                    
+                    if (Spikes[row, column].Black) eatenB++;
+                    if (!Spikes[row, column].Black) eatenW++;
+                    
+                    Spikes[row, column].Black = srcSpike.Spike.Black;
+                }
                 Spikes[srcSpike.Row, srcSpike.Column].SoldiersCount--;
                 Spikes[row, column].SoldiersCount++;
             }
@@ -184,6 +222,24 @@ namespace SheshBesh
                 int turns = Math.Abs(srcSpike.Spike.SpikeId - Spikes[row, column].SpikeId) / cube1;
                 numTurns -= turns;
             }
+            ClearAll();
+
+            if (numTurns <= 0) 
+            {
+                numTurns = -1;
+                BlackTurn = !BlackTurn;
+                var ret = RollCubeEvent?.Invoke();
+                if (ret == null)
+                {
+                    return;
+                }
+                HandleEat(row, column, ret.Value.cub1, ret.Value.cub2);
+            }
+            FirstClick = true;
+        }
+
+        private void ClearAll()
+        {
             for (int i = 0; i < Spikes.GetLength(0); i++)
             {
                 for (int j = 0; j < Spikes.GetLength(1); j++)
@@ -191,14 +247,6 @@ namespace SheshBesh
                     Spikes[i, j].PreviewMode = false;
                 }
             }
-
-            if (numTurns <= 0) 
-            {
-                numTurns = -1;
-                BlackTurn = !BlackTurn;
-                RollCubeEvent?.Invoke();
-            }
-            FirstClick = true;
         }
 
         public Spike this[int row, int column] => Spikes[row, column];
@@ -290,6 +338,36 @@ namespace SheshBesh
             }
 
             return locs;
+        }
+
+        private void HandleEat(int row, int column, int cube1, int cube2)
+        {
+            if (eatenB > 0 && BlackTurn)  
+            {
+                for (int i = 1; i < 7; i++)
+                {
+                    if (cube1 == i || cube2 == i)
+                    {
+                        (int r, int c) = GetSpikeById(i - 1);
+                        Spikes[r, c].PreviewMode = Spikes[r, c].Black == BlackTurn ||
+                                                   Spikes[r, c].IsEmpty() ||
+                                                   Spikes[r, c].SoldiersCount <= 1;
+                    }
+                }
+            }
+            if (eatenW > 0 && !BlackTurn)  
+            {
+                for (int i = 1; i < 7; i++)
+                {
+                    if (cube1 == i || cube2 == i)
+                    {
+                        (int r, int c) = GetSpikeById(24 - i);
+                        Spikes[r, c].PreviewMode = Spikes[r, c].Black == BlackTurn ||
+                                                   Spikes[r, c].IsEmpty() ||
+                                                   Spikes[r, c].SoldiersCount <= 1;
+                    }
+                }
+            }
         }
     }
 }

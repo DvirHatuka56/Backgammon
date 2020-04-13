@@ -40,9 +40,10 @@ namespace SheshBesh
             }
         }
 
-        private void BoardOnRollCubeEvent()
+        private (int cub1, int cub2) BoardOnRollCubeEvent()
         {
             Cubes_Clicked(null,null);
+            return (cube1, cube2);
         }
 
         private void OnMouseLeave(object sender, MouseEventArgs e)
@@ -89,6 +90,9 @@ namespace SheshBesh
             {
                 LeftTurns.Content = $"Left turn: {LogicBoard.numTurns}";
             }
+            EatenWhites.Content = $"Eaten whites: {LogicBoard.eatenW}";
+            EatenBlacks.Content = $"Eaten blacks: {LogicBoard.eatenB}";
+
             for (int i = 0; i < 2; i++)
             {
                 for (int j = 0; j < 12; j++)
