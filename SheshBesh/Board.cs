@@ -79,34 +79,9 @@ namespace SheshBesh
         {
             if (FirstClick)
             {
-                //arrange the code properly to fit the numTurn value
-                if (eatenB > 0 && BlackTurn) 
-                {
-                    if (Spikes[row,column].PreviewMode)
-                    {
-                        Spikes[row, column].SoldiersCount++;
-                        ClearAll();
-                        eatenB--;
-                        numTurns--;
-                        HandleEat(row, column, cube1, cube2);
-                        FirstClick = true;
-                    }
-                }
-                if (eatenW > 0 && !BlackTurn) 
-                {
-                    
-                    if (Spikes[row,column].PreviewMode)
-                    {
-                        Spikes[row, column].SoldiersCount++;
-                        ClearAll();
-                        eatenW--;
-                        numTurns--;
-                        HandleEat(row, column, cube1, cube2);
-                        FirstClick = true;
-                    }
-                }
-
-                if (Spikes[row, column].IsEmpty() || Spikes[row, column].Black != BlackTurn) { return; }
+                if (eatenB <= 0 && eatenW <= 0)
+                    if (Spikes[row, column].IsEmpty() || Spikes[row, column].Black != BlackTurn) { return; }
+                else if (Spikes[row, column].Black != BlackTurn)  {return;}
 
                 if (numTurns == -1) 
                 {
@@ -114,6 +89,39 @@ namespace SheshBesh
                     Cube2 = cube2;
                     SetNumTurns(row, column);
                 }
+
+                if (eatenB > 0 && BlackTurn) 
+                {
+                    if (Spikes[row,column].PreviewMode)
+                    {
+                        if (Spikes[row, column].IsEmpty()) Spikes[row, column].Black = true;
+                        Spikes[row, column].SoldiersCount++;
+                        ClearAll();
+                        eatenB--;
+                        numTurns--;
+                        HandleEat(row, column, cube1, cube2);
+                        if (Spikes[row, column].SpikeId == cube1 - 1) Cube1 = 0;
+                        if (Spikes[row, column].SpikeId == cube2 - 1) Cube2 = 0;
+                        FirstClick = true;
+                    }
+                }
+
+                if (eatenW > 0 && !BlackTurn) 
+                {
+                    if (Spikes[row,column].PreviewMode)
+                    {
+                        if (Spikes[row, column].IsEmpty()) Spikes[row, column].Black = false;
+                        Spikes[row, column].SoldiersCount++;
+                        ClearAll();
+                        eatenW--;
+                        numTurns--;
+                        HandleEat(row, column, cube1, cube2);
+                        if (Spikes[row, column].SpikeId == 24 - cube1) Cube1 = 0;
+                        if (Spikes[row, column].SpikeId == 24 - cube2) Cube2 = 0;
+                        FirstClick = true;
+                    }
+                }
+                
                 if (cube1 == cube2)
                 {
                     int[] locs = GetDoublePreviewLocations(row, column, cube1);
