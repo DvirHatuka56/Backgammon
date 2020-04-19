@@ -21,9 +21,11 @@
                     <Label Content="0" x:Name="TextCube2"/>
                     <Button Content="Role cubes"
                             Click="Cubes_Clicked"/>
-                    <Label Content="Left turns: " x:Name="LeftTurns" />
-                    <Label Content="Eaten whites: " x:Name="EatenWhites" />
-                    <Label Content="Eaten blacks: " x:Name="EatenBlacks" />
+                    <Label Content="Left turns: " x:Name="LeftTurns" FontWeight="Bold" />
+                    <Label Content="Eaten whites: " x:Name="EatenWhites" FontWeight="Bold" />
+                    <Label Content="Eaten blacks: " x:Name="EatenBlacks" FontWeight="Bold"/>
+                    <Label Content="Whites Out: " x:Name="WhitesOut" FontWeight="Bold"/>
+                    <Label Content="Blacks Out: " x:Name="BlacksOut" FontWeight="Bold"/>
                     <Label x:Name="Turn" FontWeight="Bold" />
                 </StackPanel>
             </Border>

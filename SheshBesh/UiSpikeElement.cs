@@ -91,10 +91,22 @@ namespace SheshBesh
             
             
             VerticalContentAlignment = Row == 0 ? VerticalAlignment.Top : VerticalAlignment.Bottom;
-            // BorderThickness = new Thickness(spike.Marked ? 4 : 0);
+            BitmapImage image = new BitmapImage();
+            if (spike.Marked)
+            {
+                image = GetMarkedImage(Row, Column);
+            }
+            else if (spike.PreviewMode)
+            {
+                image = GetPreviewImage(Row, Column);
+            }
+            else
+            {
+                image = GetBackgroundImage(Row, Column);
+            }
             Background = new ImageBrush
             {
-                ImageSource = spike.PreviewMode ? GetMarkedImage(Row, Column) : GetBackgroundImage(Row, Column)
+                ImageSource = image
             };
         }
 
@@ -108,9 +120,20 @@ namespace SheshBesh
             return image;
         }
 
-        private BitmapImage GetMarkedImage(int row, int column)
+        private BitmapImage GetPreviewImage(int row, int column)
         {
             string path = $"Images/{((column + row) % 2 == 0 ? "Brown" : "Black")}SpikeMarked.png";
+            BitmapImage image = new BitmapImage();
+            image.BeginInit();
+            image.UriSource = new Uri(path, UriKind.Relative);
+            image.Rotation = Row == 0 ? Rotation.Rotate180 : Rotation.Rotate0;
+            image.EndInit();
+            return image;
+        }
+        
+        private BitmapImage GetMarkedImage(int row, int column)
+        {
+            string path = $"Images/Marked{((column + row) % 2 == 0 ? "Brown" : "Black")}.png";
             BitmapImage image = new BitmapImage();
             image.BeginInit();
             image.UriSource = new Uri(path, UriKind.Relative);

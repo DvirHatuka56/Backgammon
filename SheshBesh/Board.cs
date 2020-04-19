@@ -49,30 +49,55 @@ namespace SheshBesh
                 Spikes[1, i].SpikeId = 12 + i;
             }
             
-            Spikes[0, 0].SoldiersCount = 5;
-            Spikes[0, 0].Black = true;
-            Spikes[1, 0].SoldiersCount = 5;
-            Spikes[1, 0].Black = false;
+            // Spikes[0, 0].SoldiersCount = 5;
+            // Spikes[0, 0].Black = true;
+            // Spikes[1, 0].SoldiersCount = 5;
+            // Spikes[1, 0].Black = false;
+            //
+            // Spikes[0, 4].SoldiersCount = 3;
+            // Spikes[0, 4].Black = false;
+            // Spikes[1, 4].SoldiersCount = 3;
+            // Spikes[1, 4].Black = true;
+            //
+            // Spikes[0, 4].SoldiersCount = 3;
+            // Spikes[0, 4].Black = false;
+            // Spikes[1, 4].SoldiersCount = 3;
+            // Spikes[1, 4].Black = true;
+            //
+            // Spikes[0, 6].SoldiersCount = 5;
+            // Spikes[0, 6].Black = false;
+            // Spikes[1, 6].SoldiersCount = 5;
+            // Spikes[1, 6].Black = true;
+            //
+            // Spikes[0, 11].SoldiersCount = 2;
+            // Spikes[0, 11].Black = true;
+            // Spikes[1, 11].SoldiersCount = 2;
+            // Spikes[1, 11].Black = false;
             
-            Spikes[0, 4].SoldiersCount = 3;
-            Spikes[0, 4].Black = false;
-            Spikes[1, 4].SoldiersCount = 3;
-            Spikes[1, 4].Black = true;
-            
-            Spikes[0, 4].SoldiersCount = 3;
-            Spikes[0, 4].Black = false;
-            Spikes[1, 4].SoldiersCount = 3;
-            Spikes[1, 4].Black = true;
-            
-            Spikes[0, 6].SoldiersCount = 5;
+            // Spikes[0, 0].SoldiersCount = 5;
+            // Spikes[0, 0].Black = true;
+            // Spikes[1, 0].SoldiersCount = 5;
+            // Spikes[1, 0].Black = false;
+            //
+            // Spikes[0, 4].SoldiersCount = 3;
+            // Spikes[0, 4].Black = false;
+            // Spikes[1, 4].SoldiersCount = 3;
+            // Spikes[1, 4].Black = true;
+            //
+            // Spikes[0, 4].SoldiersCount = 3;
+            // Spikes[0, 4].Black = false;
+            // Spikes[1, 4].SoldiersCount = 3;
+            // Spikes[1, 4].Black = true;
+            //
+            Spikes[0, 6].SoldiersCount = 15;
             Spikes[0, 6].Black = false;
-            Spikes[1, 6].SoldiersCount = 5;
+            Spikes[1, 6].SoldiersCount = 15;
             Spikes[1, 6].Black = true;
-            
-            Spikes[0, 11].SoldiersCount = 2;
-            Spikes[0, 11].Black = true;
-            Spikes[1, 11].SoldiersCount = 2;
-            Spikes[1, 11].Black = false;
+            //
+            // Spikes[0, 11].SoldiersCount = 2;
+            // Spikes[0, 11].Black = true;
+            // Spikes[1, 11].SoldiersCount = 2;
+            // Spikes[1, 11].Black = false;
         }
 
         private void OnSpikeClicked(int row, int column, int cube1, int cube2)
@@ -94,15 +119,25 @@ namespace SheshBesh
                 {
                     if (Spikes[row,column].PreviewMode)
                     {
+                        if (Spikes[row, column].SoldiersCount == 1 && Spikes[row, column].Black == !BlackTurn)
+                        {
+                            Spikes[row, column].SoldiersCount--;
+                            eatenW++;
+                        }
                         if (Spikes[row, column].IsEmpty()) Spikes[row, column].Black = true;
                         Spikes[row, column].SoldiersCount++;
                         ClearAll();
                         eatenB--;
                         numTurns--;
-                        HandleEat(row, column, cube1, cube2);
                         if (Spikes[row, column].SpikeId == cube1 - 1) Cube1 = 0;
                         if (Spikes[row, column].SpikeId == cube2 - 1) Cube2 = 0;
+                        if (!HandleEat(Cube1, Cube2))
+                        {
+                            BlackTurn = !BlackTurn;
+                            numTurns = -1;
+                        }
                         FirstClick = true;
+                        return;
                     }
                 }
 
@@ -110,15 +145,25 @@ namespace SheshBesh
                 {
                     if (Spikes[row,column].PreviewMode)
                     {
+                        if (Spikes[row, column].SoldiersCount == 1 && Spikes[row, column].Black == !BlackTurn)
+                        {
+                            Spikes[row, column].SoldiersCount--;
+                            eatenB++;
+                        }
                         if (Spikes[row, column].IsEmpty()) Spikes[row, column].Black = false;
                         Spikes[row, column].SoldiersCount++;
                         ClearAll();
                         eatenW--;
                         numTurns--;
-                        HandleEat(row, column, cube1, cube2);
                         if (Spikes[row, column].SpikeId == 24 - cube1) Cube1 = 0;
                         if (Spikes[row, column].SpikeId == 24 - cube2) Cube2 = 0;
+                        if (!HandleEat(Cube1, Cube2))
+                        {
+                            BlackTurn = !BlackTurn;
+                            numTurns = -1;
+                        }
                         FirstClick = true;
+                        return;
                     }
                 }
                 
@@ -139,7 +184,7 @@ namespace SheshBesh
                         if (r == -1 || c == -1) continue;
                         bool x = CheckSpike(r, c) && CheckMoveDirection(r, c);
                         if (!x) break;
-                        Spikes[r, c].PreviewMode = x;
+                        Spikes[r, c].PreviewMode = true;
                     }
 
                     Spikes[row, column].Marked = true;
@@ -241,7 +286,25 @@ namespace SheshBesh
                 {
                     return;
                 }
-                HandleEat(row, column, ret.Value.cub1, ret.Value.cub2);
+
+                for (int i = 0; i < (BlackTurn ? eatenB : eatenW); i++)
+                {
+                    if (!HandleEat(ret.Value.cub1, ret.Value.cub2))
+                    {
+                        BlackTurn = !BlackTurn;
+                        RollCubeEvent?.Invoke();
+                        break;
+                    }
+                }
+                
+                if (WhitesInHouse())
+                {
+                    ShowWhitesOut(ret.Value.cub1, ret.Value.cub2);
+                }
+                if (BlacksInHouse())
+                {
+                    ShowBlacksOut(ret.Value.cub1, ret.Value.cub2);
+                }
             }
             FirstClick = true;
         }
@@ -347,19 +410,26 @@ namespace SheshBesh
 
             return locs;
         }
-
-        private void HandleEat(int row, int column, int cube1, int cube2)
+        
+        private bool HandleEat(int cube1, int cube2)
         {
+            int count = 0;
             if (eatenB > 0 && BlackTurn)  
             {
                 for (int i = 1; i < 7; i++)
                 {
                     if (cube1 == i || cube2 == i)
                     {
+                        
                         (int r, int c) = GetSpikeById(i - 1);
-                        Spikes[r, c].PreviewMode = Spikes[r, c].Black == BlackTurn ||
-                                                   Spikes[r, c].IsEmpty() ||
-                                                   Spikes[r, c].SoldiersCount <= 1;
+
+                        bool previewMode = Spikes[r, c].Black == BlackTurn ||
+                                          Spikes[r, c].IsEmpty() ||
+                                          Spikes[r, c].SoldiersCount <= 1;
+                        if (previewMode)
+                            count++;
+                        
+                        Spikes[r, c].PreviewMode = previewMode;
                     }
                 }
             }
@@ -370,10 +440,60 @@ namespace SheshBesh
                     if (cube1 == i || cube2 == i)
                     {
                         (int r, int c) = GetSpikeById(24 - i);
-                        Spikes[r, c].PreviewMode = Spikes[r, c].Black == BlackTurn ||
-                                                   Spikes[r, c].IsEmpty() ||
-                                                   Spikes[r, c].SoldiersCount <= 1;
+                        bool previewMode = Spikes[r, c].Black == BlackTurn ||
+                                           Spikes[r, c].IsEmpty() ||
+                                           Spikes[r, c].SoldiersCount <= 1;
+                        if (previewMode)
+                            count++;
+                        
+                        Spikes[r, c].PreviewMode = previewMode;
                     }
+                }
+            }
+
+            return count > 0;
+        }
+
+        private bool WhitesInHouse()
+        {
+            int count = 0;
+            for (int i = 6; i < 12; i++)
+            {
+                count += Spikes[0, i].SoldiersCount;
+            }
+
+            return count == 15;
+        }
+        private bool BlacksInHouse()
+        {
+            int count = 0;
+            for (int i = 6; i < 12; i++)
+            {
+                count += Spikes[1, i].SoldiersCount;
+            }
+
+            return count == 15;
+        }
+
+        private void ShowWhitesOut(int cube1, int cube2)
+        {
+            for (int i = 1; i < 7; i++)
+            {
+                if (cube1 == i || cube2 == i)
+                {
+                    (int r, int c) = GetSpikeById(i - 1);
+                    Spikes[r, c].PreviewMode = Spikes[r, c].Black == BlackTurn && !Spikes[r, c].IsEmpty();
+                }
+            }
+        }
+        private void ShowBlacksOut(int cube1, int cube2)
+        {
+            for (int i = 1; i < 7; i++)
+            {
+                if (cube1 == i || cube2 == i)
+                {
+                    (int r, int c) = GetSpikeById(24 - i);
+                    Spikes[r, c].PreviewMode = Spikes[r, c].Black == BlackTurn && !Spikes[r, c].IsEmpty();
                 }
             }
         }
