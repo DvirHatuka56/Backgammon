@@ -100,6 +100,10 @@ namespace SheshBesh
             {
                 image = GetPreviewImage(Row, Column);
             }
+            else if (spike.OutMode)
+            {
+                image = GetOutModeImage(Row, Column);
+            }
             else
             {
                 image = GetBackgroundImage(Row, Column);
@@ -156,6 +160,16 @@ namespace SheshBesh
         public override string ToString()
         {
             return $"Row: {Row}, Column: {Column}";
+        }
+        private BitmapImage GetOutModeImage(int row, int column)
+        {
+            string path = $"Images/Out{((column + row) % 2 == 0 ? "Brown" : "Black")}Spike.png";
+            BitmapImage image = new BitmapImage();
+            image.BeginInit();
+            image.UriSource = new Uri(path, UriKind.Relative);
+            image.Rotation = Row == 0 ? Rotation.Rotate180 : Rotation.Rotate0;
+            image.EndInit();
+            return image;
         }
     }
 }

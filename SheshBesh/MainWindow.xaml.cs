@@ -46,21 +46,6 @@ namespace SheshBesh
             return (cube1, cube2);
         }
 
-        private void OnMouseLeave(object sender, MouseEventArgs e)
-        {            
-            if (LogicBoard.FirstClick) { return; }
-            Update();
-        }
-
-        private void OnMouseEnter(object sender, MouseEventArgs e)
-        {
-            if (LogicBoard.FirstClick) { return; }
-            
-            UiSpikeElement uiSpikeElement = (UiSpikeElement) sender;
-            Spike spike = LogicBoard[uiSpikeElement.Row, uiSpikeElement.Column];
-            UiBoard[uiSpikeElement.Row, uiSpikeElement.Column].Update(spike.SoldiersCount + 1, LogicBoard.srcSpike.Spike.Black);
-        }
-
         private void SetInGrid(UiSpikeElement element, int row, int column)
         {
             if (column > 5)
@@ -92,7 +77,21 @@ namespace SheshBesh
             }
             EatenWhites.Content = $"Eaten whites: {LogicBoard.eatenW}";
             EatenBlacks.Content = $"Eaten blacks: {LogicBoard.eatenB}";
+            
+            WhitesOut.Content = $"Whites Out: {LogicBoard.whitesOut}";
+            BlacksOut.Content = $"Blacks Out: {LogicBoard.blacksOut}";
 
+            if (LogicBoard.blacksOut==15)
+            {
+                MessageBox.Show("Black wins");
+                Close();
+            }
+            if (LogicBoard.whitesOut==15)
+            {
+                MessageBox.Show("White wins");
+                Close();
+            }
+            
             for (int i = 0; i < 2; i++)
             {
                 for (int j = 0; j < 12; j++)

@@ -6,7 +6,7 @@
         public int SoldiersCount { get; set; }
         public bool Black { get; set; }
         public bool Marked { get; set; }
-        
+        public bool OutMode { get; set; }
         public bool PreviewMode { get; set; }
         
 
@@ -16,6 +16,7 @@
             SoldiersCount = 0;
             Black = true;
             Marked = false;
+            OutMode = false;
         }
 
         public Spike(int soldiersCount, bool black)
