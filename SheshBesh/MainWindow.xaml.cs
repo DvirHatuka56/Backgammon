@@ -84,6 +84,7 @@ namespace SheshBesh
             if (LogicBoard.blacksOut==15)
             {
                 MessageBox.Show("Black wins");
+                
                 Close();
             }
             if (LogicBoard.whitesOut==15)
